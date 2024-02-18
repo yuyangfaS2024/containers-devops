@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-profile-deployment
+  labels:
+    app: project-containers
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: project-containers
+  template:
+    metadata:
+      labels:
+        app: project-containers
+    spec:
+      containers:
+      - name: project-containers
+        image: gcr.io/gcp-docker-kubernetes-414203/project-containers:1.0.2
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: spring-profile-config
+        resources:
+          requests:
+            cpu: "200m"
+--- #for a single file
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: spring-profile-autoscaling
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-profile-deployment
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-profile-deployment
+  labels:
+    app: project-containers
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: project-containers
+  template:
+    metadata:
+      labels:
+        app: project-containers
+    spec:
+      containers:
+      - name: project-containers
+        image: gcr.io/gcp-docker-kubernetes-414203/project-containers:1.0.0
+        ports:
+        - containerPort: 8080
